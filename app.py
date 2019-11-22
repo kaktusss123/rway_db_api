@@ -31,7 +31,7 @@ def get(lst: list) -> str:
         with conn.cursor() as cur:
             q = f'SELECT hash FROM {seg} WHERE hash IN ({", ".join(map(lambda x: f"{wrapper}{x}{wrapper}", hash_to_id.keys()))})'
             cur.execute(q)
-            selected = map(lambda x: x[0], cur.fetchall())
+            selected = list(map(lambda x: x[0], cur.fetchall()))
             res = [{'id': id, 'exists': h in selected} for h, id in hash_to_id.items()]
     return dumps(res)
         
