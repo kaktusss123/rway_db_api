@@ -39,6 +39,8 @@ async def put(lst: list) -> str:
                 (source, link, price, area, hash) \
                 VALUES (\'{el["source"]}\', \'{el["link"]}\', {el["price"]}, {el["area"]}, \
                 \'{sha256("__".join((str(el[key]) for key in keys)).encode("utf-8")).hexdigest()}\')')
+            except:
+                pass
     return 'Success'
         
         
