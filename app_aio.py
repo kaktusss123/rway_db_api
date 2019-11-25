@@ -46,11 +46,17 @@ async def put(lst: list) -> str:
         
 @app.route('/put', methods=['POST'])
 def put_api():
-    return asyncio.run(put(request.json))
+    loop = asyncio.new_event_loop()
+    res = loop.run_until_complete(put(request.json))
+    loop.close()
+    return res
 
 @app.route('/get', methods=['POST'])
 def get_api():
-    return asyncio.run(get(request.json))
+    loop = asyncio.new_event_loop()
+    res = loop.run_until_complete(get(request.json))
+    loop.close()
+    return res
 
 if __name__ == "__main__":
     app.run('10.199.13.111', 9515)
