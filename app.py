@@ -2,6 +2,7 @@ import psycopg2
 from flask import Flask, request
 from hashlib import sha256
 from json import dumps
+from datetime import date
 
 app = Flask(__name__)
 segments = {
@@ -14,9 +15,9 @@ def put(lst: list) -> str:
         with conn.cursor() as cur:
             for el in lst:
                 cur.execute(f'INSERT INTO {segments[el["segment"]]} \
-                (source, link, price, area, hash) \
+                (source, link, price, area, hash, date) \
                 VALUES (\'{el["source"]}\', \'{el["link"]}\', {el["price"]}, {el["area"]}, \
-                \'{sha256("__".join((str(el[key]) for key in keys)).encode("utf-8")).hexdigest()}\') \
+                \'{sha256("__".join((str(el[key]) for key in keys)).encode("utf-8")).hexdigest()}\', \'{date.today()}\') \
                 ON CONFLICT DO NOTHING')
         conn.commit()
     return 'Success'
