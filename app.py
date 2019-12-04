@@ -6,7 +6,12 @@ from datetime import date
 
 app = Flask(__name__)
 segments = {
-    'Коммерческая Недвижимость': 'commerce_offers'
+    'Коммерческая Недвижимость': 'commerce_offers',
+    'Земельные участки': 'land_offers',
+    'Готовый бизнес': 'business_offers',
+    'Жилая недвижимость': 'flat_offers',
+    'Загородная недвижимость': 'house_offers',
+    'Гаражи и машиноместа': 'garage_offers'
 }
 
 def put(lst: list) -> str:
