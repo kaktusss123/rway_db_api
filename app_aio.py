@@ -8,7 +8,12 @@ from datetime import date
 
 app = Flask(__name__)
 segments = {
-    'Коммерческая Недвижимость': 'commerce_offers'
+    'Коммерческая Недвижимость': 'commerce_offers',
+    'Земельные участки': 'land_offers',
+    'Готовый бизнес': 'business_offers',
+    'Жилая недвижимость': 'flat_offers',
+    'Загородная недвижимость': 'house_offers',
+    'Гаражи и машиноместа': 'garage_offers'
 }
 
 
@@ -36,9 +41,10 @@ async def get(lst: list) -> str:
 async def put(lst: list) -> str:
     keys = ('source', 'link', 'price', 'area')
     async with ClientSession() as s:
-        client = ChClient(s, database='offers_dims')
+        client = ChClient(s, database='offers_dims',
+                          url='http://10.199.13.111:8123')
         if not await client.is_alive():
-            return 'DB connection error'
+            return {'status': 'DB connection error'}
         for el in lst:
             try:
                 await client.execute(f'INSERT INTO {segments[el["segment"]]} \
