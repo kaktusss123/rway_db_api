@@ -34,7 +34,7 @@ async def get(lst: list) -> str:
     res = [{'id': id, 'exists': False, 'diap': None, 'storage': None, 'operation': None}
            for h, id in hash_to_id.items() if h not in selected]
     res += [{'id': hash_to_id[h], 'exists': True, 'diap': d,
-             'storage': s, 'operation': o} for h, d, s, o in data]
+             'storage': s, 'operation': o} for h, d, s, o in map(lambda x: x.values(), data)]
     return dumps(res)
 
 
@@ -46,13 +46,20 @@ async def put(lst: list) -> str:
         if not await client.is_alive():
             return {'status': 'DB connection error'}
         for el in lst:
+            el['operation'] = int(el.get('operation')) if el.get(
+                'operation') is not None else None
+            el['storage'] = int(el.get('storage')) if el.get(
+                'storage') is not None else None
+            el['diap'] = int(el.get('diap')) if el.get(
+                'diap') is not None else None
             try:
                 await client.execute(f'INSERT INTO {segments[el["segment"]]} \
                 (source, link, price, area, hash, date, diap, storage, operation) \
-                VALUES (\'{el["source"]}\', \'{el["link"]}\', {el["price"]}, {el["area"]}, \
-                \'{sha256("__".join((str(el[key]) for key in keys)).encode("utf-8")).hexdigest()}\, \'{date.today()}\', \'{el.get("diap")}\', \'{el.get("storage")}\', \'{el.get("operation")}\')')
-            except:
-                pass
+                VALUES ', (el["source"], el["link"], el["price"], el["area"],
+                           sha256("__".join((str(el[key]) for key in keys)).encode("utf-8")).hexdigest(), date.today(), el.get("diap"), el.get("storage"), el.get("operation")))
+            except Exception as e:
+                print(f'{e.__class__.__name__}: {e}')
+        await client.execute(f'OPTIMIZE TABLE {segments[el["segment"]]}')
     return {'status': 'Success'}
 
 
@@ -73,4 +80,5 @@ def get_api():
 
 
 if __name__ == "__main__":
-    app.run('10.199.13.111', 9515)
+    # app.run('10.199.13.111', 9515)
+    app.run()
